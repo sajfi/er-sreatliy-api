@@ -1,5 +1,8 @@
 <?php
-
+/*
+ * Vyžaduje rozšíření XML_RPC
+ * http://pear.php.net/package/XML_RPC
+ */
 require_once 'XML/RPC.php';
 
 /**
