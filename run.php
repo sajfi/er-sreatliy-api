@@ -2,9 +2,9 @@
 
 require_once 'erSreality.class.php';
 
-$api_key = 'xaxaxa';
+$api_key = 'key';
 $api_id = 1;
-$api_password = 'xaxaxa';
+$api_password = 'password';
 
 $handle = fopen('test.jpg', 'r');
 $img_data = fread($handle, filesize('test.jpg'));
@@ -56,7 +56,7 @@ $params = array(
     'garage' => false,
     'parking_lots' => false,
     'user_status' => true,
-    //'seller_id' => 17951,
+    'seller_id' => $seller_id,
 );
 
 $advert_id = $sreality->saveAdvert($params);
