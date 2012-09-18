@@ -19,6 +19,9 @@ class erSreality
     const API_PATH = '/srealityApi/RPC2';
     const API_SERVER = 'http://www.expertreality.cz';
 
+//    const API_PATH = '/RPC2';
+//    const API_SERVER = 'http://import.sreality.cz';
+    
     protected $token = null;
     protected $client = null;
 
@@ -53,7 +56,7 @@ class erSreality
             'params' => $params
             ));
         
-        return $result['advert_id'];
+        return $result[0]['advert_id'];
     }
     
     /**
@@ -98,7 +101,7 @@ class erSreality
             'advert_rkid' => $sreality_rkid, 
             'data' => $data));
         
-        return $result['photo_id'];
+        return $result[0]['photo_id'];
     }
     
     /**
@@ -146,7 +149,7 @@ class erSreality
             'seller_id' => $sreality_id, 
             'seller_rkid' => $sreality_rkid, 
             'data' => $data));
-        return $result['seller_id'];
+        return $result[0]['seller_id'];
     }
     
     /**
@@ -197,7 +200,7 @@ class erSreality
         if (is_null($this->token))
         {
             $result = $this->callMethod('getHash', array('client_id' => $this->getApiId()));
-            $this->token = $result['session_id'];
+            $this->token = $result[0]['sessionId'];
         }
 
         $fp = substr($this->token, 0, 48);
@@ -260,22 +263,32 @@ class erSreality
         $client = $this->getRpcClient();
 //        $client->setDebug(true);
         
-        
         $xml_params = array();
         foreach ($params as $key => $param)
         {
-//            if($key == 'data')
-//            {
-//                $XML_RPC_val = new XML_RPC_Value;
-//                $XML_RPC_val->addStruct($param);
-//                $xml_params[] = $XML_RPC_val;
-//            }
-//            else
-//            {
+            if(is_array($param))
+            {
+                $XML_RPC_val = new XML_RPC_Value;
+                foreach ($param as $k => $v) 
+                {
+                    if($k == 'data' || $k == 'photo')
+                    {    
+                        $arr[$k] = new XML_RPC_Value($v, 'base64');
+                    }
+                    else
+                    {
+                        $arr[$k] = XML_RPC_encode($v);
+                    }
+                }
+                $XML_RPC_val->addStruct($arr); 
+                $xml_params[] = $XML_RPC_val;
+            }
+            else
+            {
                 $xml_params[] = XML_RPC_encode($param);
-//            }
+            }
         }
-
+        
         $msg = new XML_RPC_Message($method, $xml_params);
         $response = $client->send($msg);
         
