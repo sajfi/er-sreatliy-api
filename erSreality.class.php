@@ -200,6 +200,7 @@ class erSreality
         if (is_null($this->token))
         {
             $result = $this->callMethod('getHash', array('client_id' => $this->getApiId()));
+            
             $this->token = $result[0]['sessionId'];
         }
 
@@ -275,6 +276,10 @@ class erSreality
                     {    
                         $arr[$k] = new XML_RPC_Value($v, 'base64');
                     }
+//                    elseif($k == 'ready_date')
+//                    {    
+//                        $arr[$k] = new XML_RPC_Value($v, 'dateTime.iso8601');
+//                    }
                     else
                     {
                         $arr[$k] = XML_RPC_encode($v);
@@ -288,17 +293,23 @@ class erSreality
                 $xml_params[] = XML_RPC_encode($param);
             }
         }
+       
+//        echo '<pre>';
+//        var_dump($xml_params);
+       
         
         $msg = new XML_RPC_Message($method, $xml_params);
         $response = $client->send($msg);
         
+//        var_dump($response);
+//        echo '</pre>';
+//        die();
+        
         if(!$response)
         {
-            var_dump($client->errstr);
-            throw new Exception('Sreality ERROR: response === false');
+            //var_dump($client->errstr);
+            throw new Exception('Sreality ERROR: response === false, '.$client->errstr);
         }
-        
-//        var_dump($response);
         
         $response = XML_RPC_decode($response->value());
 
